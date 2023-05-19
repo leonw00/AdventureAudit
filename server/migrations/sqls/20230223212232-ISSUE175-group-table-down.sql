@@ -1,0 +1,24 @@
+ALTER TABLE `group`
+DROP FOREIGN KEY FK_GroupUser;
+
+ALTER TABLE `group`
+DROP FOREIGN KEY FK_GroupTrip;
+
+ALTER TABLE `group`
+DROP PRIMARY KEY;
+
+ALTER TABLE `group`
+ADD COLUMN group_record_id BIGINT NOT NULL AUTO_INCREMENT,
+ADD PRIMARY KEY (group_record_id);
+
+ALTER TABLE `group`
+ADD COLUMN group_id bigint NOT NULL;
+
+ALTER TABLE `group`
+DROP COLUMN trip_id;
+
+ALTER TABLE `group`
+ADD COLUMN member_id bigint NOT NULL;
+
+ALTER TABLE `group`
+DROP COLUMN user_id;

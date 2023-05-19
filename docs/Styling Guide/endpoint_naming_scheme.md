@@ -1,0 +1,11 @@
+# Endpoint Naming Scheme
+- The first parameter indicates the type of record that will be returned, created, deleted or modified
+- The parameter preceding an `ID` describes the type of `ID` in the schema
+  - e.g. `GET /x/y/:id`, the given `ID` is for a `y` record. The request will return a record of type `x` that is related to the `ID` of record `y`
+- If the path parameter is not an `ID` the preceding parameter will describe the type path parameter
+  - e.g. `GET user/email/:address` describes that the path parameter is an email address
+- The `PUT` verb will be used for updating an record
+  - `PUT` endpoints will have the targeted `ID` in the path, while the new data is in the body of the request
+    - e.g. `PUT /x/:id` will be used to update an record of type `x` with the given `ID`
+- All parameters (in the paths, queries and bodies) will be in snake case
+- Only the `report` endpoints will use query parameters

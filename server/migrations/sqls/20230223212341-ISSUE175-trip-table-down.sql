@@ -1,0 +1,11 @@
+ALTER TABLE `trip`
+ADD COLUMN currency VARCHAR(3);
+
+ALTER TABLE `trip`
+ADD COLUMN description VARCHAR(255);
+
+ALTER TABLE `trip`
+ADD COLUMN user_id BIGINT NOT NULL;
+
+ALTER TABLE `trip`
+DROP FOREIGN KEY FK_TripCountry;

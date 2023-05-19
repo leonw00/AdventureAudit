@@ -1,0 +1,1 @@
+ALTER TABLE `trip` ADD COLUMN `user_id` VARCHAR(30);

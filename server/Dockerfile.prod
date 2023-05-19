@@ -1,0 +1,17 @@
+FROM node:16.10.0-alpine
+
+WORKDIR /app
+COPY package.json .
+
+RUN apk update && apk add bash 
+RUN npm install
+
+COPY . .
+
+ARG DB_PASSWORD
+ENV DB_PASSWORD ${DB_PASSWORD}
+
+EXPOSE 8000
+
+
+CMD ["npm", "start"]

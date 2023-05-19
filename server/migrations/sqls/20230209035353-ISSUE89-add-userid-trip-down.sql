@@ -1,0 +1,1 @@
+ALTER TABLE `trip` DROP COLUMN `user_id` VARCHAR(30);

@@ -1,0 +1,1 @@
+ALTER TABLE `user` ADD COLUMN `email_id` VARCHAR(255);

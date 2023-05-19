@@ -1,0 +1,15 @@
+services:
+  adventure-audit-backend:
+    container_name: 'adventure-audit-server'
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - .:/app
+    ports:
+      - 8000:8000
+    expose:
+      - 8000
+    env_file:
+      - .env

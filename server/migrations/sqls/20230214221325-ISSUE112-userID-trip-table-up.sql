@@ -1,0 +1,2 @@
+ALTER TABLE `trip` 
+MODIFY user_id BIGINT NOT NULL;

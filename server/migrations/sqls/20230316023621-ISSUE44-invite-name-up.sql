@@ -1,0 +1,4 @@
+ALTER TABLE `invite`
+ADD `inviter_id` BIGINT NOT NULL,
+ADD CONSTRAINT FK_Inviter
+FOREIGN KEY (inviter_id) REFERENCES user(user_id) ON DELETE CASCADE;

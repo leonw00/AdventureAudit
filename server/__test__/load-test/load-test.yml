@@ -1,0 +1,88 @@
+config:
+  target: "http://localhost:8000"
+  phases:
+    - duration: 60 # run for 60 seconds
+      arrivalRate: 5 # add 5 virutal users every second
+      name: "Load Testing"
+  processor: "./processor.js"
+
+
+scenarios:
+  - name: Main Page Simulation
+    # This simulates the general user navigation
+    # 1. Create user
+    # 2. View list of trips
+    flow:
+      - post:
+          # create a new user
+          beforeRequest: ["createUserData"]
+          url: "/user"
+          form:
+            name: "{{ name }}"
+            country_id: "{{ country_id }}"
+            email: "{{ email }}"
+          capture:
+            - json: "$.user.insertId"
+              as: "user_id"
+      - get:
+          # view the list of trips
+          url: "/trip/user/{{ user_id }}"
+
+  - name: Trip creation, edit and delition
+    # This simulates posting, updating, and deleting trips
+    # 1. Create the Trip
+    # 2. Update the Trip
+    # 3. Delete the Trip
+    flow:
+      - post:
+          # create a new user
+          beforeRequest: ["createUserData"]
+          url: "/user"
+          form:
+            name: "{{ name }}"
+            country_id: "{{ country_id }}"
+            email: "{{ email }}"
+          capture:
+            - json: "$.user.insertId"
+              as: "user_id"
+      - post:
+          # create a trip
+          beforeRequest: ["generateTripData"]
+          url: "/trip"
+          form:
+            user_id: "{{ user_id }}"
+            name: "{{ trip_name }}"
+            budget: "{{ trip_budget }}"
+            country_id: "{{ country_id }}"
+            startDateTime: "{{ startDateTime }}"
+            endDateTime: "{{ endDateTime }}"
+          capture:
+            - json: "$.trip.insertId"
+              as: "trip_id"
+      - put:
+          # Edit the Created Trip
+          beforeRequest: ["generateTripData"]
+          url: "/trip/{{ trip_id }}"
+          form:
+            name: "{{ trip_name }}"
+            budget: "{{ trip_budget }}"
+            country_id: "{{ country_id }}"
+            startDateTime: "{{ startDateTime }}"
+            endDateTime: "{{ endDateTime }}"
+      - delete:
+          # Delete the Trip
+          url: "/trip/{{ trip_id }}"
+
+  - name: Report retrieval
+    # This simulates checking the report
+    # 1. View the top 5 transactions 
+    # 2. View the total cost of trip
+    flow:
+      - loop:
+        - get:
+            # view the top 5 Transaction
+            url: "/report/transaction?&trip_id=5"
+        - get:
+            # view the total cost of trip
+            url: "/report/sum?&trip_id=5"
+        count: 5

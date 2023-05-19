@@ -1,0 +1,3 @@
+ALTER TABLE `category`
+ADD CONSTRAINT FK_CategoryTrip
+FOREIGN KEY (trip_id) REFERENCES trip(trip_id) ON DELETE CASCADE;
