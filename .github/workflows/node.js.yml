@@ -1,0 +1,43 @@
+name: Server Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DB_DATABASE: test
+  DB_USER: root
+  DB_PASSWORD: root
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Set up MySQL
+        run: |
+          echo "Set up MySQL"
+          sudo /etc/init.d/mysql start
+          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+      - name: Install global dependencies
+        run: |
+          echo "Install Global Dependencies"
+          npm install -g db-migrate db-migrate-mysql
+      - name: Install dependencies
+        working-directory: ./server
+        run: |
+          echo "Install Dependencies"
+          cp .env.sample .env
+          npm install
+      - name: Run tests
+        working-directory: ./server
+        run: npm run test

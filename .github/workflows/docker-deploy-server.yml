@@ -1,0 +1,66 @@
+name: Docker Build Deploy (Server)
+
+on:
+  release:
+    types: [published]
+
+env:
+  DB_TEST_DATABASE: test
+  DB_TEST_USER: root
+  DB_TEST_PASSWORD: root
+
+jobs:
+  deploy-server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Set up MySQL
+        run: |
+          echo "Set up MySQL"
+          sudo /etc/init.d/mysql start
+          mysql -e 'CREATE DATABASE ${{ env.DB_TEST_DATABASE }};' -u${{ env.DB_TEST_USER }} -p${{ env.DB_TEST_PASSWORD }}
+
+      - name: Install global dependencies
+        run: |
+          echo "Install Global Dependencies"
+          npm install -g db-migrate db-migrate-mysql
+
+      - name: Install dependencies
+        working-directory: ./server
+        run: |
+          echo "Install Dependencies"
+          cp .env.sample .env
+          npm install
+
+      - name: Run tests
+        working-directory: ./server
+        run: npm run test
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: ./server
+          build-args: |
+            "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+          file: ./server/Dockerfile.prod
+          push: true
+          tags: taehoya/adventure_audit_server:${{ github.REF_NAME }}
